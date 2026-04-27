@@ -1,0 +1,23 @@
+Options -Indexes +FollowSymLinks
+RewriteEngine On
+
+# Block sensitive files
+<FilesMatch "\.(sql|env|log|git|htpasswd|bak|zip)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# API routes -> api/index.php  (works at root OR in subfolder)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)$ api/index.php [L,QSA,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*/)api/(.*)$ $1api/index.php [L,QSA,NC]
+
+# SPA fallback -> public/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^.*/api/
+RewriteRule ^(.*)$ public/index.php [L,QSA]
